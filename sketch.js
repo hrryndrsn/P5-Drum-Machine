@@ -1,9 +1,12 @@
+//globals
 var numSteps = 16;
 var counter = 0;
 var interval;
 var timer;
+var bmp;
+var beatInterval;
 
-var numRows = 2;
+var numRows = 2; // no used 
 var rowsArray = [] // array of Row Objects
 
 // 	Row Settings
@@ -16,6 +19,13 @@ var ySpacing = 35; //
 //sound file
 var soundArray = [];
 
+//color variables --> add this
+var inactive;
+var active;
+var playing
+
+//gui
+var gui;
 
 
 //-------------------------------
@@ -23,6 +33,14 @@ function setup() {
   createCanvas(800, 800);
   timer = createP('timer');
   noStroke();
+
+  //set bpm and calc interval
+  bpm = 200;
+  beatInterval = (60000 / bpm);
+  
+  //gui
+  gui = createGui('gui');
+  gui.addGlobals('bpm');
 
   //load sound file 
   soundArray[0] = loadSound('assets/808-Kicks02.wav');
@@ -36,7 +54,7 @@ function setup() {
   }
   
   // creates a dom element and sets interval = to 1000
-  createTimer(timer, 500);
+  createTimer(timer, beatInterval); //sets the speed permanently 
   
 } 
 
@@ -175,7 +193,7 @@ function Row(x, y, sample) {
       
       else {
         
-        fill(0);
+        fill(200);
       }
       // call steps display method after fill has been set
   		this.steps[i].display();
