@@ -3,7 +3,7 @@ var counter = 0;
 var interval;
 var timer;
 
-var numRows = 8;
+var numRows = 2;
 var rowsArray = [] // array of Row Objects
 
 // 	Row Settings
@@ -14,7 +14,7 @@ var xSpacing = 35; // x spacing between nodes [hard coded]
 var ySpacing = 35; //
     
 //sound file
-var kick;
+var soundArray = [];
 
 
 
@@ -25,11 +25,13 @@ function setup() {
   noStroke();
 
   //load sound file 
-  kick = loadSound('assets/808-Kicks02.wav')
+  soundArray[0] = loadSound('assets/808-Kicks02.wav');
+  soundArray[1] = loadSound('assets/808-HiHats03.wav');
+  soundArray[2] = loadSound('assets/808-Clap02.wav');
   
-  for(var q = 0; q < numRows; q++) {
+  for(var q = 0; q < soundArray.length; q++) {
   	//push num rows to the rows array
-    rowsArray.push(new Row(rowX, rowY + (ySpacing*q)))
+    rowsArray.push(new Row(rowX, rowY + (ySpacing*q), soundArray[q]))
     rowsArray[q].createSteps();
   }
   
@@ -86,12 +88,12 @@ function createTimer(element, wait) {
 
 
 //------------------------------
-function Step(x, y) {
+function Step(x, y, s) {
 	//constructor
   this.x = x;
   this.y = y;
   this.size = stepSize;
-  this.sound = kick; //hard coded
+  this.sound = s; 
   this.active = false;
   this.alreadyPlaying = false;
   
@@ -99,6 +101,9 @@ function Step(x, y) {
   this.display = function() {
   rect(this.x, this.y, this.size, this.size);
   
+}
+  this.play = function() {
+    this.sound.play();
   }
   
   
@@ -124,18 +129,19 @@ function Step(x, y) {
 }
 
 //------------------------------
-function Row(x, y) {
+function Row(x, y, sample) {
 	
 	this.steps = [];
   this.x = x;
   this.y = y;
 	this.xSpacing = xSpacing;
+  this.sample = sample;
   
   this.createSteps = function() {
   	//push step objects to the step array
     
   	for(var j = 0; j < numSteps; j++) {
-    	this.steps.push(new Step(this.x+j*xSpacing, this.y));
+    	this.steps.push(new Step(this.x+j*xSpacing, this.y, this.sample));
   	}
   }
   
@@ -184,13 +190,20 @@ function Row(x, y) {
       if (t == counter && this.steps[t].active && this.steps[t].alreadyPlaying == false) {
           this.steps[t].active = true; //turns node off again
           this.steps[t].alreadyPlaying = true;
-          this.steps[t].sound.play();
+          this.steps[t].sound.play(); //what for step play function
           //console.log('sound play!');
         
       }  
       
       //turns the next step on [alreadyplaying = false] if its active [red]
       if (t == counter + 1 && this.steps[t].active) {
+        if (this.steps[t].alreadyPlaying == true) {
+          //console.log('making red step alreadyPlaying = false');
+          this.steps[t].alreadyPlaying = false;
+        }
+      }
+
+      if (t == counter - 1 && this.steps[t].active) {
         if (this.steps[t].alreadyPlaying == true) {
           //console.log('making red step alreadyPlaying = false');
           this.steps[t].alreadyPlaying = false;
