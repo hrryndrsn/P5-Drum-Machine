@@ -44,7 +44,15 @@ function setup() {
   soundArray[0] = loadSound('assets/808-Kicks02.wav');
   soundArray[1] = loadSound('assets/808-HiHats03.wav');
   soundArray[2] = loadSound('assets/808-Clap02.wav');
-  
+  soundArray[3] = loadSound('assets/808-Clave1.wav');
+  soundArray[4] = loadSound('assets/808-Stick2.wav');
+  soundArray[5] = loadSound('assets/HBA1-1-bass01.wav');
+  soundArray[6] = loadSound('assets/808-Conga4.wav');
+  soundArray[7] = loadSound('assets/808-Conga3.wav');
+  soundArray[8] = loadSound('assets/Sci-Fi-Hit.wav');
+  soundArray[9] = loadSound('assets/Pedal-Bass-Hit.wav');
+  soundArray[10] = loadSound('assets/Ramen-Pedal.wav');
+
   for(var q = 0; q < soundArray.length; q++) {
   	//push num rows to the rows array
     rowsArray.push(new Row(rowX, rowY + (ySpacing*q), soundArray[q]))
@@ -190,7 +198,7 @@ function Row(x, y, sample) {
         }
         
       } else if (this.steps[i].active == true) {
-      	fill(50); // not current counter pos & not active / fill red
+      	fill(0, 200, 0); // not current counter pos & not active / fill red
       }
       
       else {
@@ -265,5 +273,5 @@ function startStopButton (x, y) {
 //TO DO
 
 //add mouse click start stop
-//add 3 more tracks
+//fix bottom 4 more tracks
 //host online
