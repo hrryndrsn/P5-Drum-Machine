@@ -48,7 +48,7 @@ function draw() {
   	//call displaySteps Method for each row in rows Array
     rowsArray[d].displaySteps();
     rowsArray[d].playSounds();
-  }
+    }
   
 }
 
@@ -61,10 +61,6 @@ function mousePressed() {
   		//each row in rows array
     	rowsArray[p].stepWasClicked();
     
-    	for (var v = 0; v < rowsArray[p].steps.length; v++) {
- 					//accessing all steps 
-        	
-      }
   }
   
 		
@@ -125,11 +121,6 @@ function Step(x, y) {
       return false;
     }
   }
-
-  this.reset = function() {
-    // turn off already playing 
-    this.alreadyPlaying = false;
-  }
 }
 
 //------------------------------
@@ -188,22 +179,34 @@ function Row(x, y) {
 
   this.playSounds = function() {
     //checks the current counter position and plays the sound
-    //seperate the sound from the visuals but basically do the same check
-
     for(var t = 0; t < this.steps.length; t++) {
-      //check counter position
-      if (t == counter && this.steps[t].active == true) {
-        //the current element is equal to the counter position and the step is active 
-        if (this.steps[t].alreadyPlaying == false) {
-          console.log('Play sound once!');
-          this.steps[t].sound.play();
+      //each step in steps array
+      if (t == counter && this.steps[t].active && this.steps[t].alreadyPlaying == false) {
+          this.steps[t].active = true; //turns node off again
           this.steps[t].alreadyPlaying = true;
-          
-        } else if (this.steps[t].alreadyPlaying == false){
-            console.log('Already playing');
-        }  
+          this.steps[t].sound.play();
+          //console.log('sound play!');
+        
+      }  
+      
+      //turns the next step on [alreadyplaying = false] if its active [red]
+      if (t == counter + 1 && this.steps[t].active) {
+        if (this.steps[t].alreadyPlaying == true) {
+          //console.log('making red step alreadyPlaying = false');
+          this.steps[t].alreadyPlaying = false;
         }
       }
-
     }
+  }
+    
+
+    
+    // this.resetSteps = function() {
+    //   for(var z = 0; z < this.steps.length; z++) {
+    //     this.steps[z].sound.onended(function() {
+    //       console.log('sound ended, resetting step');
+    //       this.steps[z].reset();
+    //     });
+    //   }
+    // }
 }
