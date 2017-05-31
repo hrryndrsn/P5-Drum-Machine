@@ -95,7 +95,7 @@ function Step(x, y) {
   this.x = x;
   this.y = y;
   this.size = stepSize;
-  this.sound = kick;
+  this.sound = kick; //hard coded
   this.active = false;
   this.alreadyPlaying = false;
   
@@ -124,6 +124,11 @@ function Step(x, y) {
     	//this.active = false;
       return false;
     }
+  }
+
+  this.reset = function() {
+    // turn off already playing 
+    this.alreadyPlaying = false;
   }
 }
 
@@ -187,17 +192,18 @@ function Row(x, y) {
 
     for(var t = 0; t < this.steps.length; t++) {
       //check counter position
-      if (t == counter) {
-        //if the current element is equal to the counter position
-        if (this.steps[t].active == true) {
-          if (kick.isPlaying() == false) {
-            kick.play();
-          }
+      if (t == counter && this.steps[t].active == true) {
+        //the current element is equal to the counter position and the step is active 
+        if (this.steps[t].alreadyPlaying == false) {
+          console.log('Play sound once!');
+          this.steps[t].sound.play();
+          this.steps[t].alreadyPlaying = true;
           
+        } else if (this.steps[t].alreadyPlaying == false){
+            console.log('Already playing');
+        }  
         }
       }
 
     }
-
-  }
 }
