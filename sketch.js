@@ -5,16 +5,16 @@ var interval;
 var timer;
 var bmp;
 var beatInterval;
+var startStop;
 
-var numRows = 2; // no used 
 var rowsArray = [] // array of Row Objects
 
 // 	Row Settings
-var rowX = 100; // top left corner of first row
-var rowY = 100;
-var stepSize = 30; // size of rect of each step [hard coded]
-var xSpacing = 35; // x spacing between nodes [hard coded]
-var ySpacing = 35; //
+var rowX = 400; // top left corner of first row
+var rowY = 200;
+var stepSize = 60; // size of rect of each step [hard coded]
+var xSpacing = 65; // x spacing between nodes [hard coded]
+var ySpacing = 65; //
     
 //sound file
 var soundArray = [];
@@ -30,7 +30,7 @@ var gui;
 
 //-------------------------------
 function setup() { 
-  createCanvas(800, 800);
+  createCanvas(windowWidth, windowHeight);
   timer = createP('timer');
   noStroke();
 
@@ -38,9 +38,7 @@ function setup() {
   bpm = 200;
   beatInterval = (60000 / bpm);
   
-  //gui
-  gui = createGui('gui');
-  gui.addGlobals('bpm');
+  startStop = new startStopButton(400, 130);
 
   //load sound file 
   soundArray[0] = loadSound('assets/808-Kicks02.wav');
@@ -69,7 +67,13 @@ function draw() {
     rowsArray[d].displaySteps();
     rowsArray[d].playSounds();
     }
-  
+ if (startStop.isOver == true) {
+    fill(0, 255, 0);
+    
+ } else {
+   fill(50);
+ }
+   startStop.display();
 }
 
 //------------------------------
@@ -82,10 +86,8 @@ function mousePressed() {
     	rowsArray[p].stepWasClicked();
     
   }
-  
-		
 }
-  
+
 
 //------------------------------
 function createTimer(element, wait) {
@@ -184,11 +186,11 @@ function Row(x, y, sample) {
         if (this.steps[i].active == false) {
         	fill(0, 0, 225); // current counter pos but not active/ fill blue
         } else {
-        	fill(255, 0, 0); // current counter pos but active / fill red
+        	fill(104, 255, 188); // current counter pos but active / fill red
         }
         
       } else if (this.steps[i].active == true) {
-      	fill(255, 0 , 0); // not current counter pos & not active / fill black
+      	fill(50); // not current counter pos & not active / fill red
       }
       
       else {
@@ -229,15 +231,39 @@ function Row(x, y, sample) {
       }
     }
   }
-    
-
-    
-    // this.resetSteps = function() {
-    //   for(var z = 0; z < this.steps.length; z++) {
-    //     this.steps[z].sound.onended(function() {
-    //       console.log('sound ended, resetting step');
-    //       this.steps[z].reset();
-    //     });
-    //   }
-    // }
 }
+
+//------------------------------
+function startStopButton (x, y) {
+  this.x = x;
+  this.y = y;
+  this.xSize = 125;
+  this.ySize = 65;
+
+  this.isOver = function() {
+    if ((mouseX > this.x) && (mouseX < this.x + this.xSize)) {
+      if ((mouseY > This.y) && (mouseY < this.y + this.ySize)) {
+        return true;
+      } 
+    }
+
+  }
+
+  this.display = function() {
+    fill(50);
+    rect(this.x, this.y, this.xSize, this.ySize);
+    fill(255);
+    textSize(14);
+    text('Start / Stop', this.x+25, this.y+40);
+  }
+ 
+}
+
+
+
+
+//TO DO
+
+//add mouse click start stop
+//add 3 more tracks
+//host online
