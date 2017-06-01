@@ -4,7 +4,9 @@ var counter = 0;
 var interval;
 var timer;
 var bmp;
-var beatInterval;
+var globalInterval;
+var gIsPlaying = false;
+var isOverStart;
 var startStop;
 
 var rowsArray = [] // array of Row Objects
@@ -35,8 +37,8 @@ function setup() {
   noStroke();
 
   //set bpm and calc interval
-  bpm = 200;
-  beatInterval = (60000 / bpm);
+  bpm = 120;
+  
   
   startStop = new startStopButton(400, 130);
 
@@ -60,7 +62,7 @@ function setup() {
   }
   
   // creates a dom element and sets interval = to 1000
-  createTimer(timer, beatInterval); //sets the speed permanently 
+  // createTimer(timer, beatInterval); //sets the speed permanently 
   
 } 
 
@@ -68,6 +70,7 @@ function setup() {
 //------------------------------
 function draw() { 
   background(220);
+  isOverStart = startStop.isOver();
   
   
   for(var d = 0; d < rowsArray.length; d++){
@@ -82,25 +85,38 @@ function draw() {
    fill(50);
  }
    startStop.display();
+   startStop.isOver();
+   
 }
 
 //------------------------------
 function mousePressed() {
   //set the step prop as active if the mouse is pressed over its position
   
-
   for (var p = 0; p < rowsArray.length; p++) {
   		//each row in rows array
     	rowsArray[p].stepWasClicked();
-    
   }
+
+  if (isOverStart == true && gIsPlaying == false) {
+    gIsPlaying = true;
+    startTimer(bpm);
+    
+  } else if (isOverStart == true && gIsPlaying == true) {
+    
+    console.log('gIsPlaying = false');
+    gIsPlaying = false;
+    stopTimer();
+  }
+  
+  
 }
 
-
+ 
 //------------------------------
 function createTimer(element, wait) {
 	
-  setInterval (timeIt, wait);
+  globalInterval = setInterval (timeIt, wait);
   
   //function to call every interval of wait
   function timeIt() {
@@ -112,6 +128,23 @@ function createTimer(element, wait) {
     	counter++
     }
   }
+}
+
+//-------------------------------
+function startTimer(bpm) {
+ 
+  globalInterval = (60000/ bpm) / 4;
+  createTimer(timer, globalInterval);
+  console.log('bpm = ' + bpm);
+  console.log('gInterval = ' + globalInterval);
+
+}
+
+//-------------------------------
+function stopTimer() {
+  clearInterval(globalInterval);
+  globalInteral = 0;
+  console.log('gInterval = ' + globalInterval);
 }
 
 
@@ -250,9 +283,13 @@ function startStopButton (x, y) {
 
   this.isOver = function() {
     if ((mouseX > this.x) && (mouseX < this.x + this.xSize)) {
-      if ((mouseY > This.y) && (mouseY < this.y + this.ySize)) {
+      if ((mouseY > this.y) && (mouseY < this.y + this.ySize)) {
         return true;
-      } 
+      } else {
+        return false;
+      }
+    } else {
+      return false;
     }
 
   }
