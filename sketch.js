@@ -9,6 +9,8 @@ var gIsPlaying = false;
 var isOverStart;
 var startStop;
 
+var volume;
+
 var rowsArray = [] // array of Row Objects
 
 // 	Row Settings
@@ -20,6 +22,7 @@ var ySpacing = 65; //
     
 //sound file
 var soundArray = [];
+var labelArray = [];
 
 //color variables --> add this
 var inactive;
@@ -38,6 +41,14 @@ function setup() {
 
   //set bpm and calc interval
   bpm = 120;
+  gui = createGui('Settings');
+  
+  sliderRange(1, 200, 1);
+  gui.addGlobals('bpm');
+
+  volume = 0.5;
+  sliderRange(0, 1, 0.1);
+  gui.addGlobals('volume');
   
   
   startStop = new startStopButton(400, 130);
@@ -48,16 +59,27 @@ function setup() {
   soundArray[2] = loadSound('assets/808-Clap02.wav');
   soundArray[3] = loadSound('assets/808-Clave1.wav');
   soundArray[4] = loadSound('assets/808-Stick2.wav');
-  soundArray[5] = loadSound('assets/HBA1-1-bass01.wav');
-  soundArray[6] = loadSound('assets/808-Conga4.wav');
-  soundArray[7] = loadSound('assets/808-Conga3.wav');
-  soundArray[8] = loadSound('assets/Sci-Fi-Hit.wav');
-  soundArray[9] = loadSound('assets/Pedal-Bass-Hit.wav');
-  soundArray[10] = loadSound('assets/Ramen-Pedal.wav');
+  soundArray[5] = loadSound('assets/808-Conga4.wav');
+  soundArray[6] = loadSound('assets/808-Conga5.wav');
+  soundArray[7] = loadSound('assets/808-Cowbell5.wav');
+  soundArray[8] = loadSound('assets/Chant-Hey-001.wav');
+  soundArray[9] = loadSound('assets/Zap001.wav');
+
+  //labels;
+  labelArray[0] = 'Bass';
+  labelArray[1] = 'Hit Hat';
+  labelArray[2] = 'Clap';
+  labelArray[3] = 'Clave';
+  labelArray[4] = 'Stick';
+  labelArray[5] = 'Conga High';
+  labelArray[6] = 'Conga Low';
+  labelArray[7] = 'Cow Bell';
+  labelArray[8] = 'Hey!';
+  labelArray[9] = 'Zap';
 
   for(var q = 0; q < soundArray.length; q++) {
   	//push num rows to the rows array
-    rowsArray.push(new Row(rowX, rowY + (ySpacing*q), soundArray[q]))
+    rowsArray.push(new Row(rowX, rowY + (ySpacing*q), soundArray[q], labelArray[q]))
     rowsArray[q].createSteps();
   }
   
@@ -71,12 +93,13 @@ function setup() {
 function draw() { 
   background(220);
   isOverStart = startStop.isOver();
-  
+  setVolume(volume);
   
   for(var d = 0; d < rowsArray.length; d++){
   	//call displaySteps Method for each row in rows Array
     rowsArray[d].displaySteps();
     rowsArray[d].playSounds();
+    rowsArray[d].displayLabels();
     }
  if (startStop.isOver == true) {
     fill(0, 255, 0);
@@ -110,6 +133,11 @@ function mousePressed() {
   }
   
   
+}
+
+//------------------------------
+function setVolume(volume) {
+  masterVolume(volume);
 }
 
  
@@ -190,13 +218,14 @@ function Step(x, y, s) {
 }
 
 //------------------------------
-function Row(x, y, sample) {
+function Row(x, y, sample, label) {
 	
 	this.steps = [];
   this.x = x;
   this.y = y;
 	this.xSpacing = xSpacing;
   this.sample = sample;
+  this.label = label;
   
   this.createSteps = function() {
   	//push step objects to the step array
@@ -217,8 +246,17 @@ function Row(x, y, sample) {
       }
   
   }
+
+  this.displayLabels = function() {
+    textSize(14);
+    textStyle(BOLD);
+    textAlign(RIGHT);
+    fill(50);
+    text(this.label, this.x-50, this.y+35);
+  }
   
   this.displaySteps = function() {
+   
    // set fill and call Step.display method for each step in steps array
     for(var i = 0; i < this.steps.length; i++) {
   	
@@ -298,8 +336,9 @@ function startStopButton (x, y) {
     fill(50);
     rect(this.x, this.y, this.xSize, this.ySize);
     fill(255);
+    textAlign(RIGHT);
     textSize(14);
-    text('Start / Stop', this.x+25, this.y+40);
+    text('Start / Stop', this.x+100, this.y+40);
   }
  
 }
