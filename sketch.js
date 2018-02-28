@@ -77,12 +77,15 @@ function setup() {
   labelArray[8] = 'Hey!';
   labelArray[9] = 'Zap';
 
+  var data = window.location.hash.substring(1);;
+
   for(var q = 0; q < soundArray.length; q++) {
   	//push num rows to the rows array
     rowsArray.push(new Row(rowX, rowY + (ySpacing*q), soundArray[q], labelArray[q]))
     rowsArray[q].createSteps();
+    rowsArray[q].setData(data.substring(q*4,q*4+4));
   }
-  
+
   // creates a dom element and sets interval = to 1000
   // createTimer(timer, beatInterval); //sets the speed permanently 
   
@@ -116,10 +119,13 @@ function draw() {
 function mousePressed() {
   //set the step prop as active if the mouse is pressed over its position
   
+  var newData = "";
   for (var p = 0; p < rowsArray.length; p++) {
   		//each row in rows array
     	rowsArray[p].stepWasClicked();
+      newData += rowsArray[p].getData();
   }
+  window.history.pushState({},"","/index.html#"+newData);
 
   if (isOverStart == true && gIsPlaying == false) {
     gIsPlaying = true;
@@ -188,13 +194,12 @@ function Step(x, y, s) {
   
   //draws rect at passed xy pos
   this.display = function() {
-  rect(this.x, this.y, this.size, this.size);
-  
-}
+    rect(this.x, this.y, this.size, this.size);
+  }
+
   this.play = function() {
     this.sound.play();
   }
-  
   
   //tests is the mouse position is over this step
   this.isOver = function() {
@@ -234,17 +239,53 @@ function Row(x, y, sample, label) {
     	this.steps.push(new Step(this.x+j*xSpacing, this.y, this.sample));
   	}
   }
+
+  this.getData = function() {
+    return this.steps
+      .map(function(step){
+        return step.active;
+      })
+      .reduce(function(acc,current,index){
+        var charIndex = Math.floor(index/4);
+        var char = acc[charIndex];
+        var bitIndex = index%4;
+        if(current) {
+          var newChar = char | (1<<bitIndex);
+          acc[charIndex] = newChar;
+        }
+        return acc;
+      },[0,0,0,0])
+      .reduce(function(acc,current){
+        return acc + String.fromCharCode(97+current);
+      },"")
+  }
+
+  this.setData = function(data) {
+    var array = [
+      data.charCodeAt(0)-97,
+      data.charCodeAt(1)-97,
+      data.charCodeAt(2)-97,
+      data.charCodeAt(3)-97
+    ]
+    this.steps.forEach(function(step,index) {
+      var arrayIndex = Math.floor(index/4);
+      var bitIndex = index%4;
+      console.log(arrayIndex,bitIndex,array[arrayIndex])
+      if(array[arrayIndex] & 1<<bitIndex) {
+        step.active = true;
+      }
+    })
+  }
   
   this.stepWasClicked = function () {
   		for (var g = 0; g < this.steps.length; g++) {
       		var mouseOver = this.steps[g].isOver();
         	if (mouseOver == true && this.steps[g].active == false) {
-          	this.steps[g].active = true;
+            	this.steps[g].active = true;
           } else if (mouseOver == true && this.steps[g].active == true) {
           		this.steps[g].active = false;	
           }
       }
-  
   }
 
   this.displayLabels = function() {
@@ -289,7 +330,11 @@ function Row(x, y, sample, label) {
       if (t == counter && this.steps[t].active && this.steps[t].alreadyPlaying == false) {
           this.steps[t].active = true; //turns node off again
           this.steps[t].alreadyPlaying = true;
-          this.steps[t].sound.play(); //what for step play function
+          try {
+            this.steps[t].sound.play(); //what for step play function
+          } catch(e) {
+            console.log(e);
+          }
           //console.log('sound play!');
         
       }  
